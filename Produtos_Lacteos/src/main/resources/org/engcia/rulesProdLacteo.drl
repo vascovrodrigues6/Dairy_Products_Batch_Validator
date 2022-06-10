@@ -1,0 +1,1741 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+package org.engcia;
+
+import org.engcia.model.TipoProdutoLacteo;
+import org.engcia.model.LeiteCru;
+import org.engcia.model.LeitePasteurizado;
+import org.engcia.model.LeiteGordo;
+import org.engcia.model.LeiteMeioGordo;
+import org.engcia.model.LeiteMagro;
+import org.engcia.model.LeiteAchocolatado;
+import org.engcia.model.LeiteEmPo;
+import org.engcia.model.Manteiga;
+import org.engcia.model.Natas;
+import org.engcia.model.Fact;
+import org.engcia.model.Conclusion;
+import org.engcia.model.Hypothesis;
+
+
+import function org.engcia.view.UI.answer;
+import function org.engcia.view.UI.answerUnknown;
+import function org.engcia.view.UI.answerValuesBigger;
+import function org.engcia.view.UI.answerValuesBiggerEqual;
+import function org.engcia.view.UI.answerValuesSmaller;
+import function org.engcia.view.UI.answerValuesSmallerEqual;
+import function org.engcia.view.UI.answerValuesRange;
+import function org.engcia.utils.JsonReader.readJsonFileTagValueString;
+import function org.engcia.utils.JsonReader.readJsonFileTagValueFloat;
+
+
+query "Conclusions"
+	$conclusion : Conclusion()
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Cru"
+	when
+		eval(answer(TipoProdutoLacteo.TIPO, "leite cru"))
+	then
+		Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO,"leite cru");
+		insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Pasteurizado"
+	when
+		eval(answer(TipoProdutoLacteo.TIPO, "leite pasteurizado"))
+	then
+		Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO,"leite pasteurizado");
+		insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Gordo"
+	when
+		eval(answer(TipoProdutoLacteo.TIPO, "leite gordo"))
+	then
+		Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO,"leite gordo");
+		insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Meio_Gordo"
+	when
+		eval(answer(TipoProdutoLacteo.TIPO, "leite meio gordo"))
+	then
+		Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO,"leite meio gordo");
+		insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Magro"
+	when
+		eval(answer(TipoProdutoLacteo.TIPO, "leite magro"))
+	then
+		Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO, "leite magro");
+		insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Achocolatado"
+    when
+        eval(answer(TipoProdutoLacteo.TIPO, "leite achocolatado"))
+    then
+        Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO, "leite achocolatado");
+        insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Leite_Em_Po"
+    when
+        eval(answer(TipoProdutoLacteo.TIPO, "leite em pó"))
+    then
+        Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO, "leite em pó");
+        insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Manteiga"
+    when
+        eval(answer(TipoProdutoLacteo.TIPO, "manteiga"))
+    then
+        Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO, "manteiga");
+        insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Natas"
+    when
+        eval(answer(TipoProdutoLacteo.TIPO, "natas"))
+    then
+        Hypothesis h = new Hypothesis(TipoProdutoLacteo.TIPO, "natas");
+        insert(h);
+end
+
+rule "Tipo_Produto_Lacteo_Sair"
+    when
+        eval(answer(TipoProdutoLacteo.TIPO, "sair"))
+    then
+        Conclusion c = new Conclusion(Conclusion.SAIR);
+		insert(c);
+end
+
+rule "Tipo_Produto_Lacteo_Desconhecido"
+    when
+        eval(answerUnknown(TipoProdutoLacteo.TIPO, ""))
+    then
+        Conclusion c = new Conclusion(Conclusion.DESCONHECIDO);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Coagulacao_Prova_Alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answer(LeiteCru.COAGULA_PROVA_ALCOOL, readJsonFileTagValueString("LeiteCru.json","COAGULA_PROVA_ALCOOL")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Existencia_Contaminantes_Neutralizantes"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answer(LeiteCru.EXISTE_CONTAMINANTES_NEUTRALIZANTES, readJsonFileTagValueString("LeiteCru.json","EXISTE_CONTAMINANTES_NEUTRALIZANTES")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Existencia_Inibidores"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answer(LeiteCru.EXISTE_INIBIDORES, readJsonFileTagValueString("LeiteCru.json","EXISTE_INIBIDORES")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Existencia_Agua_Crioscopia"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answerValuesBiggerEqual(LeiteCru.CRIOSCOPIA, readJsonFileTagValueFloat("LeiteCru.json","CRIOSCOPIA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Existencia_Micro_Organismos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answerValuesBigger(LeiteCru.EXISTE_MICRO_ORGANISMOS, readJsonFileTagValueFloat("LeiteCru.json","EXISTE_MICRO_ORGANISMOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Fosfatase_Negativa"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answer(LeiteCru.FOSFATASE, readJsonFileTagValueString("LeiteCru.json","FOSFATASE_REJEITAR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Cru_Teste_Fosfatase_Positiva"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite cru")
+		eval(answer(LeiteCru.FOSFATASE, readJsonFileTagValueString("LeiteCru.json","FOSFATASE_ACEITAR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Pasteurizado_Teste_Existencia_Micro_Organismos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite pasteurizado")
+		eval(answerValuesBigger(LeitePasteurizado.EXISTE_MICRO_ORGANISMOS, readJsonFileTagValueFloat("LeitePasteurizado.json","EXISTE_MICRO_ORGANISMOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Pasteurizado_Teste_Fosfatase_Negativa"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite pasteurizado")
+		eval(answer(LeitePasteurizado.FOSFATASE, readJsonFileTagValueString("LeitePasteurizado.json","FOSFATASE_ACEITAR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Pasteurizado_Teste_Fosfatase_Positiva"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite pasteurizado")
+		eval(answer(LeitePasteurizado.FOSFATASE, readJsonFileTagValueString("LeitePasteurizado.json","FOSFATASE_REJEITAR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_30_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_30_ASPETO, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_30_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_30_Cor_Nao_Esperada"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_30_COR, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_30_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_30_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_30_AROMA_SABOR, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_30_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_50_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_50_ASPETO, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_50_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_50_Cor_Nao_Esperada"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_50_COR, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_50_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Estufa_50_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.ESTUFA_50_AROMA_SABOR, readJsonFileTagValueString("LeiteGordo.json","ESTUFA_50_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Densidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmaller(LeiteGordo.DENSIDADE, readJsonFileTagValueFloat("LeiteGordo.json","DENSIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Residuos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.RESIDUOS, readJsonFileTagValueString("LeiteGordo.json","RESIDUOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_PH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteGordo.PH_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteGordo.json","PH_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteGordo.json","PH_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_PH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteGordo.PH_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteGordo.json","PH_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteGordo.json","PH_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Coagulacao_Prova_Alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answer(LeiteGordo.COAGULA_PROVA_ALCOOL, readJsonFileTagValueString("LeiteGordo.json","COAGULA_PROVA_ALCOOL")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Acidez_NAOH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteGordo.ACIDEZ_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteGordo.json","ACIDEZ_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteGordo.json","ACIDEZ_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Acidez_NAOH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteGordo.ACIDEZ_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteGordo.json","ACIDEZ_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteGordo.json","ACIDEZ_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Gorda_Qualidade_Interna"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteGordo.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_GORDA_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_GORDA_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Gorda_Legislacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(!answerValuesBiggerEqual(LeiteGordo.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_GORDA_LIMITE_INFERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Proteica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmaller(LeiteGordo.MATERIA_PROTEICA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_PROTEICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Lactose"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmaller(LeiteGordo.LACTOSE, readJsonFileTagValueFloat("LeiteGordo.json","LACTOSE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_ESD"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmaller(LeiteGordo.E_S_D, readJsonFileTagValueFloat("LeiteGordo.json","E_S_D")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Tempo_Detecao_Esterilidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmaller(LeiteGordo.TEMPO_DETECAO_ESTERILIDADE, readJsonFileTagValueFloat("LeiteGordo.json","TEMPO_DETECAO_ESTERILIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Aerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesBigger(LeiteGordo.MATERIA_AEROBICA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_AEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Anaerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesBigger(LeiteGordo.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Gordo_Teste_Materia_Anaerobica_Aceitar"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite gordo")
+		eval(answerValuesSmallerEqual(LeiteGordo.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteGordo.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_30_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_30_ASPETO, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_30_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_30_Cor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_30_COR, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_30_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_30_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_30_AROMA_SABOR, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_30_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_50_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_50_ASPETO, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_50_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_50_Cor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_50_COR, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_50_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Estufa_50_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.ESTUFA_50_AROMA_SABOR, readJsonFileTagValueString("LeiteMeioGordo.json","ESTUFA_50_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Densidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmaller(LeiteMeioGordo.DENSIDADE, readJsonFileTagValueFloat("LeiteMeioGordo.json","DENSIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Residuos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.RESIDUOS, readJsonFileTagValueString("LeiteMeioGordo.json","RESIDUOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_PH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.PH_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteMeioGordo.json","PH_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","PH_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_PH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.PH_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteMeioGordo.json","PH_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","PH_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Coagulacao_Prova_Alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answer(LeiteMeioGordo.COAGULA_PROVA_ALCOOL, readJsonFileTagValueString("LeiteMeioGordo.json","COAGULA_PROVA_ALCOOL")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Acidez_NAOH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.ACIDEZ_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteMeioGordo.json","ACIDEZ_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","ACIDEZ_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Acidez_NAOH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.ACIDEZ_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteMeioGordo.json","ACIDEZ_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","ACIDEZ_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Gorda_Qualidade_Interna"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_GORDA_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_GORDA_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Gorda_Legislacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(!answerValuesRange(LeiteMeioGordo.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_GORDA_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_GORDA_LIMITE_SUPERIOR_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Proteica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmaller(LeiteMeioGordo.MATERIA_PROTEICA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_PROTEICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Lactose"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmaller(LeiteMeioGordo.LACTOSE, readJsonFileTagValueFloat("LeiteMeioGordo.json","LACTOSE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_ESD"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmaller(LeiteMeioGordo.E_S_D, readJsonFileTagValueFloat("LeiteMeioGordo.json","E_S_D")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Tempo_Detecao_Esterilidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmaller(LeiteMeioGordo.TEMPO_DETECAO_ESTERILIDADE, readJsonFileTagValueFloat("LeiteMeioGordo.json","TEMPO_DETECAO_ESTERILIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Aerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesBigger(LeiteMeioGordo.MATERIA_AEROBICA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_AEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Anaerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesBigger(LeiteMeioGordo.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Meio_Gordo_Teste_Materia_Anaerobica_Aceitar"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite meio gordo")
+		eval(answerValuesSmallerEqual(LeiteMeioGordo.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteMeioGordo.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_30_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_30_ASPETO, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_30_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_30_Cor_Nao_Esperada"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_30_COR, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_30_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_30_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_30_AROMA_SABOR, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_30_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_50_Aspeto_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_50_ASPETO, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_50_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_50_Cor_Nao_Esperada"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_50_COR, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_50_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Estufa_50_Aroma_Sabor_Nao_Esperado"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.ESTUFA_50_AROMA_SABOR, readJsonFileTagValueString("LeiteMagro.json","ESTUFA_50_AROMA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Densidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmaller(LeiteMagro.DENSIDADE, readJsonFileTagValueFloat("LeiteMagro.json","DENSIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Residuos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.RESIDUOS, readJsonFileTagValueString("LeiteMagro.json","RESIDUOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_PH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(!answerValuesRange(LeiteMagro.PH_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteMagro.json","PH_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMagro.json","PH_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_PH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(!answerValuesRange(LeiteMagro.PH_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteMagro.json","PH_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMagro.json","PH_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Coagulacao_Prova_Alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answer(LeiteMagro.COAGULA_PROVA_ALCOOL, readJsonFileTagValueString("LeiteMagro.json","COAGULA_PROVA_ALCOOL")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Acidez_NAOH_Sem_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(!answerValuesRange(LeiteMagro.ACIDEZ_SEM_INCUBACAO, readJsonFileTagValueFloat("LeiteMagro.json","ACIDEZ_SEM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMagro.json","ACIDEZ_SEM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Acidez_NAOH_Com_Incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(!answerValuesRange(LeiteMagro.ACIDEZ_COM_INCUBACAO, readJsonFileTagValueFloat("LeiteMagro.json","ACIDEZ_COM_INCUBACAO_LIMITE_INFERIOR"), readJsonFileTagValueFloat("LeiteMagro.json","ACIDEZ_COM_INCUBACAO_LIMITE_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Gorda_Qualidade_Interna"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesBigger(LeiteMagro.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_GORDA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Gorda_Legislacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesBigger(LeiteMagro.MATERIA_GORDA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_GORDA_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Proteica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmaller(LeiteMagro.MATERIA_PROTEICA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_PROTEICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Lactose"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmaller(LeiteMagro.LACTOSE, readJsonFileTagValueFloat("LeiteMagro.json","LACTOSE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_ESD"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmaller(LeiteMagro.E_S_D, readJsonFileTagValueFloat("LeiteMagro.json","E_S_D")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Tempo_Detecao_Esterilidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmaller(LeiteMagro.TEMPO_DETECAO_ESTERILIDADE, readJsonFileTagValueFloat("LeiteMagro.json","TEMPO_DETECAO_ESTERILIDADE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Aerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesBigger(LeiteMagro.MATERIA_AEROBICA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_AEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Anaerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesBigger(LeiteMagro.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Magro_Teste_Materia_Anaerobica_Aceitar"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite magro")
+		eval(answerValuesSmallerEqual(LeiteMagro.MATERIA_ANAEROBICA, readJsonFileTagValueFloat("LeiteMagro.json","MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_Densidade"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.DENSIDADE_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","DENSIDADE_LEITE_ACHOCOLATADO_INFERIOR"), readJsonFileTagValueFloat("LeiteAchocolatado.json","DENSIDADE_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_ph_sem_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.PH_SEM_INCUBACAO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","PH_SEM_INCUBACAO_LEITE_ACHOCOLATADO_INFERIOR"), readJsonFileTagValueFloat("LeiteAchocolatado.json","PH_SEM_INCUBACAO_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_ph_com_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.PH_COM_INCUBACAO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","PH_COM_INCUBACAO_LEITE_ACHOCOLATADO_INFERIOR"), readJsonFileTagValueFloat("LeiteAchocolatado.json","PH_COM_INCUBACAO_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_prova_de_alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(answer(LeiteAchocolatado.PROVA_DE_ALCOOL_LEITE_ACHOCOLATADO, readJsonFileTagValueString("LeiteAchocolatado.json","PROVA_DE_ALCOOL_LEITE_ACHOCOLATADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_acidez_naohl_sem_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.ACIDEZ_NAOH_L_SEM_INCUBACAO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","ACIDEZ_NAOH_L_SEM_INCUBACAO_LEITE_ACHOCOLATADO_INFERIOR"), readJsonFileTagValueFloat("LeiteAchocolatado.json","ACIDEZ_NAOH_L_SEM_INCUBACAO_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_acidez_naohl_com_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.ACIDEZ_NAOH_L_COM_INCUBACAO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","ACIDEZ_NAOH_L_COM_INCUBACAO_LEITE_ACHOCOLATADO_INFERIOR"),readJsonFileTagValueFloat("LeiteAchocolatado.json","ACIDEZ_NAOH_L_COM_INCUBACAO_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_materia_gorda"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.MATERIA_GORDA_LEITE_ACHOCOLATADO,readJsonFileTagValueFloat("LeiteAchocolatado.json","MATERIA_GORDA_LEITE_ACHOCOLATADO_INFERIOR"),readJsonFileTagValueFloat("LeiteAchocolatado.json","MATERIA_GORDA_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_materia_proteica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(answerValuesSmaller(LeiteAchocolatado.MATERIA_PROTEICA_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","MATERIA_PROTEICA_LEITE_ACHOCOLATADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_hidratos_de_carbono"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(!answerValuesRange(LeiteAchocolatado.HIDRATOS_DE_CARBONO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","HIDRATOS_DE_CARBONO_LEITE_ACHOCOLATADO_INFERIOR"),readJsonFileTagValueFloat("LeiteAchocolatado.json","HIDRATOS_DE_CARBONO_LEITE_ACHOCOLATADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_esd"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(answerValuesSmaller(LeiteAchocolatado.ESD_EXTRATO_SECO_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","ESD_EXTRATO_SECO_LEITE_ACHOCOLATADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_materia_aerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(answerValuesBigger(LeiteAchocolatado.MATERIA_AEROBICA_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","MATERIA_AEROBICA_LEITE_ACHOCOLATADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Achocolatado_materia_anaerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite achocolatado")
+		eval(answerValuesSmallerEqual(LeiteAchocolatado.MATERIA_ANAEROBICA_LEITE_ACHOCOLATADO, readJsonFileTagValueFloat("LeiteAchocolatado.json","MATERIA_ANAEROBICA_LEITE_ACHOCOLATADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Tipo_Leite_em_Po_magro"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.TIPO_LEITE_EM_PO, "leite magro"))
+	then
+		Hypothesis h = new Hypothesis(LeiteEmPo.TIPO_LEITE_EM_PO,"leite magro");
+        insert(h);
+end
+
+rule "Tipo_Leite_em_Po_gordo"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.TIPO_LEITE_EM_PO, "leite gordo"))
+	then
+		Hypothesis h = new Hypothesis(LeiteEmPo.TIPO_LEITE_EM_PO,"leite gordo");
+		insert(h);
+end
+
+rule "Leite_Em_Po_aspeto"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.ASPETO_LEITE_PO,readJsonFileTagValueString("LeiteEmPo.json","ASPETO_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_cor"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.COR_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","COR_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_aroma_e_sabor"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.AROMA_E_SABOR_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","AROMA_E_SABOR_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_contagem_microorganismos_30graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.CONTAGEM_MICROORGANISMOS_30GRAUS_LEITE_PO, readJsonFileTagValueFloat("LeiteEmPo.json","CONTAGEM_MICROORGANISMOS_30GRAUS_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_existencia_inibidores"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.EXISTENCIA_INIBIDORES_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","EXISTENCIA_INIBIDORES_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_acidez_leite_magro"
+	when
+		Hypothesis(description == LeiteEmPo.TIPO_LEITE_EM_PO, value == "leite magro")
+		eval(answerValuesBigger(LeiteEmPo.ACIDEZ_LEITE_PO_MAGRO, readJsonFileTagValueFloat("LeiteEmPo.json","ACIDEZ_LEITE_PO_MAGRO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_acidez_leite_gordo"
+	when
+		Hypothesis( description == LeiteEmPo.TIPO_LEITE_EM_PO, value == "leite gordo")
+		eval(answerValuesBigger(LeiteEmPo.ACIDEZ_LEITE_PO_GORDO, readJsonFileTagValueFloat("LeiteEmPo.json","ACIDEZ_LEITE_PO_GORDO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_humidade_legislacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.HUMIDADE_LEITE_PO, readJsonFileTagValueFloat("LeiteEmPo.json","HUMIDADE_LEITE_PO_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+		insert(c);
+end
+
+rule "Leite_Em_Po_humidade_interna"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.HUMIDADE_LEITE_PO, readJsonFileTagValueFloat("LeiteEmPo.json","HUMIDADE_LEITE_PO_INTERNA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_ph"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(!answerValuesRange(LeiteEmPo.PH_LEITE_PO, readJsonFileTagValueFloat("LeiteEmPo.json","PH_LEITE_PO_INFERIOR"),readJsonFileTagValueFloat("LeiteEmPo.json","PH_LEITE_PO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_prova_alcool"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.PROVA_DE_ALCOOL_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","PROVA_DE_ALCOOL_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_flora_mesofila_aerobica_legislacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.FLORA_AEROBIA_MESOFILA_LEITE_PO_LEGISLACAO, readJsonFileTagValueFloat("LeiteEmPo.json","FLORA_AEROBIA_MESOFILA_LEITE_PO_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+		insert(c);
+end
+
+rule "Leite_Em_Po_flora_mesofila_aerobica_interna"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.FLORA_AEROBIA_MESOFILA_LEITE_PO_INTERNA, readJsonFileTagValueFloat("LeiteEmPo.json","FLORA_AEROBIA_MESOFILA_LEITE_PO_INTERNA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_bacterias_coliformes_negativo"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.BACTERIAS_COLIFORMES_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","BACTERIAS_COLIFORMES_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_ecoli"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.ECOLI_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","ECOLI_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_bolores_e_leveduras"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answerValuesBigger(LeiteEmPo.BOLORES_E_LEVEDURAS_LEITE_PO, readJsonFileTagValueFloat("LeiteEmPo.json","BOLORES_E_LEVEDURAS_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_materia_gorda_leite_gordo"
+	when
+		Hypothesis( description == LeiteEmPo.TIPO_LEITE_EM_PO, value == "leite gordo")
+		eval(!answerValuesRange(LeiteEmPo.MATERIA_GORDA_LEITE_PO_GORDO, readJsonFileTagValueFloat("LeiteEmPo.json","MATERIA_GORDA_LEITE_PO_GORDO_INFERIOR"),readJsonFileTagValueFloat("LeiteEmPo.json","MATERIA_GORDA_LEITE_PO_GORDO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+rule "Leite_Em_Po_materia_gorda_leite_magro_legislacao"
+	when
+		Hypothesis( description == LeiteEmPo.TIPO_LEITE_EM_PO, value == "leite magro")
+		eval(answerValuesBigger(LeiteEmPo.MATERIA_GORDA_LEITE_PO_MAGRO_INTERNA, readJsonFileTagValueFloat("LeiteEmPo.json","MATERIA_GORDA_LEITE_PO_MAGRO_LEGISLACAO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+		insert(c);
+end
+
+rule "Leite_Em_Po_materia_gorda_leite_magro_interna"
+	when
+		Hypothesis( description == LeiteEmPo.TIPO_LEITE_EM_PO, value == "leite magro")
+		eval(answerValuesBigger(LeiteEmPo.MATERIA_GORDA_LEITE_PO_MAGRO_INTERNA, readJsonFileTagValueFloat("LeiteEmPo.json","MATERIA_GORDA_LEITE_PO_MAGRO_INTERNA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+		insert(c);
+end
+
+
+rule "Leite_Em_Po_fosfatase"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+		eval(answer(LeiteEmPo.FOSFATASE_LEITE_PO, readJsonFileTagValueString("LeiteEmPo.json","FOSFATASE_LEITE_PO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+		insert(c);
+end
+
+rule "Leite_Em_Po_fosfatase_positivo"
+    when
+        Hypothesis( description == TipoProdutoLacteo.TIPO, value == "leite em pó")
+    then
+        Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+// -----------------------------------------------------
+rule "Manteiga_estado_preparacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "manteiga")
+		eval(answer(Manteiga.ESTADO, "preparacao"))
+	then
+		Hypothesis h = new Hypothesis(Manteiga.ESTADO,"preparacao");
+        insert(h);
+end
+
+rule "Manteiga_estado_saida_da_batedeira"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "manteiga")
+		eval(answer(Manteiga.ESTADO, "saida da batedeira"))
+	then
+		Hypothesis h = new Hypothesis(Manteiga.ESTADO,"saida da batedeira");
+        insert(h);
+end
+
+rule "Manteiga_estado_depois_de_embalada"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "manteiga")
+		eval(answer(Manteiga.ESTADO, "depois de embalada"))
+	then
+		Hypothesis h = new Hypothesis(Manteiga.ESTADO,"depois de embalada");
+        insert(h);
+end
+
+rule "Manteiga_preparacao_microorganismos_agua_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_MICRORGANISMOS, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_MICRORGANISMOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_agua_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_agua_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_AGUA_PASTEURIZADA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_AGUA_PASTEURIZADA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_leitelho_intermedio"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_LEITELHO_INTERMEDIO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_LEITELHO_INTERMEDIO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_leitelho_intermedio"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_LEITELHO_INTERMEDIO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_LEITELHO_INTERMEDIO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_nata_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_NATA_PASTEURIZADA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_NATA_PASTEURIZADA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_nata_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_NATA_PASTEURIZADA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_NATA_PASTEURIZADA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bolores_e_leveduras_nata_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_NATA_PASTEURIZADA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_NATA_PASTEURIZADA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_flora_aerobia_mesofila_nata_pasteurizada"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_FLORA_AEROBIA_MESOFILA_NATA_PASTEURIZADA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_FLORA_AEROBIA_MESOFILA_NATA_PASTEURIZADA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_leitelho_pasteurizado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_LEITELHO_PASTEURIZADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_LEITELHO_PASTEURIZADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_leitelho_pasteurizado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_LEITELHO_PASTEURIZADO,  readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_LEITELHO_PASTEURIZADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bolores_e_leveduras_leitelho_pasteurizado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_LEITELHO_PASTEURIZADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_LEITELHO_PASTEURIZADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_fosfatase_leitelho_pasteurizado_negativa"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answer(Manteiga.MANTEIGA_PREPARACAO_FOSFATASE_LEITELHO_PASTEURIZADO, readJsonFileTagValueString("Manteiga.json","MANTEIGA_PREPARACAO_FOSFATASE_LEITELHO_PASTEURIZADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_fermento"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_FERMENTO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_FERMENTO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_fermento"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_FERMENTO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_FERMENTO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bolores_e_leveduras_fermento"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_FERMENTO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_FERMENTO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ph_fermento"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_PREPARACAO_PH_FERMENTO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_PH_FERMENTO_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_PH_FERMENTO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_acidez_naohl_fermento"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_PREPARACAO_ACIDEZ_NAOHL_FERMENTO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ACIDEZ_NAOHL_FERMENTO_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ACIDEZ_NAOHL_FERMENTO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bacterias_coliformes_fermento_acidificado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_FERMENTO_ACIDIFICADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BACTERIAS_COLIFORMES_FERMENTO_ACIDIFICADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ecoli_fermento_acidificado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_ECOLI_FERMENTO_ACIDIFICADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_ECOLI_FERMENTO_ACIDIFICADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_bolores_e_leveduras_fermento_acidificado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_FERMENTO_ACIDIFICADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_BOLORES_E_LEVEDURAS_FERMENTO_ACIDIFICADO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_preparacao_ph_fermento_acidificado"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "preparacao")
+		eval(answerValuesRange(Manteiga.MANTEIGA_PREPARACAO_PH_FERMENTO_ACIDIFICADO, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_PH_FERMENTO_ACIDIFICADO_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_PREPARACAO_PH_FERMENTO_ACIDIFICADO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+        insert(c);
+end
+
+rule "Manteiga_saida_batedeira_bacterias_coliformes"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "saida da batedeira")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_SAIDA_BATEDEIRA_BACTERIAS_COLIFORMES, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_SAIDA_BATEDEIRA_BACTERIAS_COLIFORMES")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_saida_batedeira_ecoli"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "saida da batedeira")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_SAIDA_BATEDEIRA_ECOLI, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_SAIDA_BATEDEIRA_ECOLI")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_saida_batedeira_bolores_e_leveduras"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "saida da batedeira")
+		eval(answerValuesBiggerEqual(Manteiga.MANTEIGA_SAIDA_BATEDEIRA_BOLORES_E_LEVEDURAS, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_SAIDA_BATEDEIRA_BOLORES_E_LEVEDURAS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_saida_batedeira_cheiro_e_sabor"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "saida da batedeira")
+		eval(answer(Manteiga.MANTEIGA_SAIDA_BATEDEIRA_CHEIRO_E_SABOR, readJsonFileTagValueString("Manteiga.json","MANTEIGA_SAIDA_BATEDEIRA_CHEIRO_E_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_bacterias_coliformes"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_BACTERIAS_COLIFORMES, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_BACTERIAS_COLIFORMES")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_ecoli"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_ECOLI, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_ECOLI")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_bolores_e_leveduras"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesBiggerEqual(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_BOLORES_E_LEVEDURAS, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_BOLORES_E_LEVEDURAS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_aspeto"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answer(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_ASPETO, readJsonFileTagValueString("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_ASPETO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_cor"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answer(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_COR, readJsonFileTagValueString("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_COR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_aroma"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answer(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_AROMA, readJsonFileTagValueString("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_AROMA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_sabor"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answer(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_SABOR, readJsonFileTagValueString("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_SABOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_ph_sem_sal"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_PH_SEM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_SEM_SAL_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_SEM_SAL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_ph_com_sal"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_PH_COM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_COM_SAL_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_COM_SAL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_ph_acida"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_PH_ACIDA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_ACIDA_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_PH_ACIDA_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_acidez_oleica"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_ACIDEZ_OLEICA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_ACIDEZ_OLEICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_materia_gorda_com_sal_legislacao"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesSmaller(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_COM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_COM_SAL_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_materia_gorda_com_sal_interna"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_COM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_COM_SAL_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_COM_SAL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_materia_gorda_sem_sal_legislacao"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesSmaller(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_SEM_SAL,readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_SEM_SAL_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_materia_gorda_sem_sal_interna"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_SEM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_SEM_SAL_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_MATERIA_GORDA_SEM_SAL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_teor_de_agua_legislacao"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesBigger(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_TEOR_AGUA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_TEOR_AGUA_LEGISLACAO")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_LEGISLACAO);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_teor_de_agua_interna"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_TEOR_AGUA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_TEOR_AGUA_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_TEOR_AGUA_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_cloretos_com_sal"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(!answerValuesRange(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_CLORETOS_COM_SAL, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_CLORETOS_COM_SAL_INFERIOR"),readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_CLORETOS_COM_SAL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Manteiga_depois_de_embalada_residuo_seco_isento_materia_gorda"
+	when
+		Hypothesis( description == Manteiga.ESTADO, value == "depois de embalada")
+		eval(answerValuesSmallerEqual(Manteiga.MANTEIGA_DEPOIS_DE_EMBALADA_RESIDUO_SECO_ISENTO_MATERIA_GORDA, readJsonFileTagValueFloat("Manteiga.json","MANTEIGA_DEPOIS_DE_EMBALADA_RESIDUO_SECO_ISENTO_MATERIA_GORDA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+        insert(c);
+end
+
+rule "Natas_aspeto_estufa_30graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_ASPETO_ESTUFA_30GRAUS,readJsonFileTagValueString("Natas.json","NATAS_ASPETO_ESTUFA_30GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_aspeto_estufa_50graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_ASPETO_ESTUFA_50GRAUS,readJsonFileTagValueString("Natas.json","NATAS_ASPETO_ESTUFA_50GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_cor_estufa_30graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_COR_ESTUFA_30GRAUS,readJsonFileTagValueString("Natas.json","NATAS_COR_ESTUFA_30GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_cor_estufa_50graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_COR_ESTUFA_50GRAUS,readJsonFileTagValueString("Natas.json","NATAS_COR_ESTUFA_50GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_aroma_e_sabor_estufa_30graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_AROMA_E_SABOR_ESTUFA_30GRAUS,readJsonFileTagValueString("Natas.json","NATAS_AROMA_E_SABOR_ESTUFA_30GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_aroma_e_sabor_estufa_50graus"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_AROMA_E_SABOR_ESTUFA_50GRAUS,readJsonFileTagValueString("Natas.json","NATAS_AROMA_E_SABOR_ESTUFA_50GRAUS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_fosfatase"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_FOSFATASE,readJsonFileTagValueString("Natas.json","NATAS_FOSFATASE")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_residuos"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answer(Natas.NATAS_RESIDUOS,readJsonFileTagValueString("Natas.json","NATAS_RESIDUOS")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_ph_sem_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(!answerValuesRange(Natas.NATAS_PH_SEM_INCUBACAO,readJsonFileTagValueFloat("Natas.json","NATAS_PH_SEM_INCUBACAO_INFERIOR"),readJsonFileTagValueFloat("Natas.json","NATAS_PH_SEM_INCUBACAO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_ph_com_incubacao"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(!answerValuesRange(Natas.NATAS_PH_COM_INCUBACAO,readJsonFileTagValueFloat("Natas.json","NATAS_PH_COM_INCUBACAO_INFERIOR"),readJsonFileTagValueFloat("Natas.json","NATAS_PH_COM_INCUBACAO_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_acidez_naohl"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(!answerValuesRange(Natas.NATAS_ACIDEZ_NAOHL,readJsonFileTagValueFloat("Natas.json","NATAS_ACIDEZ_NAOHL_INFERIOR"),readJsonFileTagValueFloat("Natas.json","NATAS_ACIDEZ_NAOHL_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_materia_gorda"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(!answerValuesRange(Natas.NATAS_MATERIA_GORDA,readJsonFileTagValueFloat("Natas.json","NATAS_MATERIA_GORDA_INFERIOR"),readJsonFileTagValueFloat("Natas.json","NATAS_MATERIA_GORDA_SUPERIOR")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_batedura"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answerValuesBigger(Natas.NATAS_BATEDURA,readJsonFileTagValueFloat("Natas.json","NATAS_BATEDURA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_materia_aerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answerValuesBigger(Natas.NATAS_MATERIA_AEROBICA,readJsonFileTagValueFloat("Natas.json","NATAS_MATERIA_AEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.REJEITAR_QUALIDADE_INTERNA);
+        insert(c);
+end
+
+rule "Natas_materia_anaerobica"
+	when
+		Hypothesis( description == TipoProdutoLacteo.TIPO, value == "natas")
+		eval(answerValuesSmallerEqual(Natas.NATAS_MATERIA_ANAEROBICA,readJsonFileTagValueFloat("Natas.json","NATAS_MATERIA_ANAEROBICA")))
+	then
+		Conclusion c = new Conclusion(Conclusion.ACEITAR);
+        insert(c);
+end
+
+query "tipo_produto_lacteo"(String ev, String v)
+	tpl : TipoProdutoLacteo( evidence == ev, value == v )
+end
+
+query "leite cru"(String ev, String v)
+	lc : LeiteCru( evidence == ev, value == v )
+end
+
+query "leite pasteurizado"(String ev, String v)
+	lp : LeitePasteurizado( evidence == ev, value == v )
+end
+
+query "leite gordo"(String ev, String v)
+	lg : LeiteGordo( evidence == ev, value == v )
+end
+
+query "leite meio gordo"(String ev, String v)
+	lmg : LeiteMeioGordo( evidence == ev, value == v )
+end
+
+query "leite magro"(String ev, String v)
+	lm : LeiteMagro( evidence == ev, value == v )
+end
+
+query "leite achocolatado"(String ev, String v)
+    la : LeiteAchocolatado ( evidence == ev, value == v )
+end
+
+query "leite em pó"(String ev, String v)
+    lpo : LeiteEmPo( evidence == ev, value == v )
+end
+
+query "natas"(String ev, String v)
+    na : Natas( evidence == ev, value == v )
+end
+
+query "manteiga"(String ev, String v)
+    man : Manteiga( evidence == ev, value == v )
+end
+
